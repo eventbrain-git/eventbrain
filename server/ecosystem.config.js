@@ -1,13 +1,14 @@
-module.export = {
+module.exports = {
     apps: [
-        {
-            name:"eventbrain",
-            script: "npm",
-            args: "run dev",
-            env: {
-                NODE_ENV: "development",
-                ENV_VAR1: "environnement-variable",
-            }
-        }
-    ]
-}
+      {
+        name: "inventory-management",
+        script: "npm",
+        args: "run dev",
+        env: {
+          NODE_ENV: "development",
+          ENV_VAR1: "environment-variable",
+        },
+      },
+    ],
+  };
+  
