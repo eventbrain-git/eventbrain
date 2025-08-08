@@ -1,28 +1,18 @@
 @import "tailwindcss";
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+@custom-variant dark (&:where(.dark, .dark *));
 
-html,
-body,
-#root,
-.app {
-  height: 100%;
-  width: 100%;
-  @apply text-sm bg-gray-500 text-gray-900;
-}
-
-@media (min-width: 768px) {
-  .custom-grid-rows {
-    grid-template-rows: repeat(8, 20vh);
+:root {
+    --bg-main-light: #fcfcfc;
+    --bg-high-light: #ffffff;
+    --bg-highlight-light: #efefef;
+    --text-main-light: #474747;  
+    --color-light: #9eddff;
+    --color-high-light: #006aff;
+    --bg-main-dark: #121212; 
+    --bg-high-dark: #1e1e1e;
+    --bg-highlight-dark: #ffffff1A;
+    --text-main-dark: #e1e1e1;
+    --color-dark: #2c52a5;
+    --color-high-dark: #598dff;
   }
-}
-
-@medi (min-width) {
-  .custom-grid-rows {
-  grid-template-rows: repeat(8, 7.5vh);
-}
-}

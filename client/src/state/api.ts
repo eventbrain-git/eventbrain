@@ -1,58 +1,28 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-export interface Product {
-    productId: string;
-    name: string;
-    price: number;
-    rating?: number
-    stockQuantity: number;
-}
-
-export interface SalesSummary {
-    salesSummaryId: string;
-    totalValue: number;
-    changePercentage?: number;
-    date: string;
-}
-
-export interface PurchaseSummary {
-    purchaseSummaryId: string;
-    totalPurchased: number;
-    changePercentage?: number;
-    date: string;
-}
-
-export interface ExpenseSummary {
-    expenseSummaryId: string;
-    totalExpenses: number;
-    date: string;
-}
-
-export interface ExpenseByCategorySummary {
-    expenseByCategorySummaryId: string;
-    category: string;
-    amount: string;
-    date: string;
-}
-
-export interface DashboardMetrics {
-    popularProducts: Product[];
-    salesSummmary: SalesSummary[];
-    purchaseSummary: PurchaseSummary[];
-    expenseSumamry: ExpenseSummary[];
-    expenseByCategorySummary: ExpenseByCategorySummary[];
+export interface Artist {
+  artistId: number;
+  artistName: string;
+  createdAt: string;
 }
 
 export const api = createApi({
-    baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL}),
+    baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL }),
     reducerPath: "api",
-    tagTypes: ["DashboardMetrics"],
+    tagTypes: ["Artist"],
     endpoints: (build) => ({
-        getDashboardMetrics: build.query<DashboardMetrics, void>({
-            query: () => "dashboard",
-            providesTags: ["DashboardMetrics"]
-        })
+      getArtists: build.query<{ artists: Artist[] }, void>({
+        query: () => "artist",
+        providesTags: (result) =>
+          result?.artists
+            ? [
+                ...result.artists.map(({ artistId }) => ({ type: "Artist" as const, id: artistId })),
+                { type: "Artist", id: "LIST" },
+              ]
+            : [{ type: "Artist", id: "LIST" }],
+      }),
     }),
-});
-
-export const { useGetDashboardMetricsQuery } = api;
+  });
+  
+  export const { useGetArtistsQuery } = api;
+  

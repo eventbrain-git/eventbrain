@@ -2,14 +2,10 @@
 
 import React from 'react'
 import {
-  Archive, 
-  CircleDollarSign, 
-  Clipboard, 
   Layout, 
   LucideIcon, 
   Menu, 
-  Settings, 
-  User 
+  Settings
 } from 'lucide-react'
 import { useAppDispatch, useAppSelector } from '@/app/redux';
 import { setIsSidebarCollapsed } from '@/state';
@@ -31,7 +27,7 @@ const SidebarLinks = ({
 }: SidebarLinkProps) => {
   const pathname = usePathname();
   const isActive =
-    pathname === href || (pathname === "/" && href === "/dashboard");
+    pathname === href || (pathname === "/" && href === "/production");
 
   return (
     <Link href={href}>
@@ -39,17 +35,17 @@ const SidebarLinks = ({
         className={`cursor-pointer flex items-center ${
           isCollapsed ? "justify-center py-4" : "justify-start px-8 py-4"
         }
-        hover:text-blue-500 hover:bg-blue-100 gap-3 transition-colors ${
-          isActive ? "bg-blue-200 text-white" : ""
+        hover:bg-[var(--color-light)] dark:hover:bg-[var(--color-dark)] gap-3 transition-colors ${
+          isActive ? "bg-[var(--bg-highlight-light)] dark:bg-[var(--bg-highlight-dark)] text-[var(--text-main-light)] dark:text-[var(--text-main-dark)]" : ""
         }
       }`}
       >
-        <Icon className="w-6 h-6 !text-gray-700" />
+        <Icon className="w-6 h-6 text-[var(--text-main-light)] dark:text-[var(--text-main-dark)]" />
 
         <span
           className={`${
             isCollapsed ? "hidden" : "block"
-          } font-medium text-gray-700`}
+          } font-medium text-[var(--text-main-light)] dark:text-[var(--text-main-dark)]`}
         >
           {label}
         </span>
@@ -71,7 +67,7 @@ const Sidebar = () => {
 
   const sidebarClassName = `fixed flex flex-col ${
     isSidebarCollapsed ? "w-0 md:w-16" : "w-72 md:w-64"
-  } bg-white transition-all duration-300 overflow-hidden h-full shadow-md z-40`;
+  } bg-[var(--bg-high-light)] transition-all duration-300 overflow-hidden h-full shadow-md z-40 dark:bg-[var(--bg-high-dark)]`;
   
   return (
     <div className={sidebarClassName}>
@@ -90,7 +86,7 @@ const Sidebar = () => {
           EVENTBRAIN
         </h1>
         <button 
-          className='md:hidden px-3 py-3 bg-gray-100 rounded-full hover:bg-blue-100'
+          className='md:hidden px-3 py-3 rounded-full bg-[var(--bg-highlight-light)] dark:bg-[var(--bg-highlight-dark)] hover:bg-[var(--color-light)] dark:hover:bg-[var(--color-dark)]'
           onClick={toggleSidebar}
         >
           <Menu className="w-4 h-4" />
@@ -100,27 +96,9 @@ const Sidebar = () => {
       {/* LINKS */}
       <div className='flex-grow mt-8'>
         <SidebarLinks 
-          href='/dashboard' 
+          href='/production' 
           icon={Layout}
-          label='Dashboard' 
-          isCollapsed={isSidebarCollapsed} 
-        />
-        <SidebarLinks 
-          href='/inventory' 
-          icon={Archive}
-          label='Inventory' 
-          isCollapsed={isSidebarCollapsed} 
-        />
-        <SidebarLinks 
-          href='/clipboard' 
-          icon={Clipboard}
-          label='Clipboard' 
-          isCollapsed={isSidebarCollapsed} 
-        />
-        <SidebarLinks 
-          href='/users' 
-          icon={User}
-          label='Users' 
+          label='Production' 
           isCollapsed={isSidebarCollapsed} 
         />
         <SidebarLinks 
@@ -129,17 +107,11 @@ const Sidebar = () => {
           label='Settings' 
           isCollapsed={isSidebarCollapsed} 
         />
-        <SidebarLinks 
-          href='/expenses' 
-          icon={CircleDollarSign}
-          label='Expenses' 
-          isCollapsed={isSidebarCollapsed} 
-        />
       </div>
 
       {/* FOOTER */}
       <div className={`${isSidebarCollapsed ? "hidden" : "block"} mb-10`}>
-        <p className='text-center text-xs text-gray-500'>&copy; 2025 EventBrain</p>
+        <p className='text-center text-xs text-[var(--text-main-light)] dark:text-[var(--text-main-dark)]'>&copy; 2025 EventBrain</p>
       </div>
     </div>
   )

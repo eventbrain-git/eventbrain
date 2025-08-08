@@ -1,7 +1,12 @@
-import Dashboard from "@/app/dashboard/page";
+import Production from "@/app/production/page";
+import { ThemeProvider } from "./context/ThemeContext";
 
 export default function Home() {
   return (
-      <Dashboard />
-  );
+    <>
+      <ThemeProvider>
+        <Production />
+      </ThemeProvider>
+    </>
+  )
 }
