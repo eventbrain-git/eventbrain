@@ -26,13 +26,13 @@ import createWebStorage from "redux-persist/lib/storage/createWebStorage";
 /* REDUX PERSISTENCE */
 const createNoopStorage = () => {
   return {
-    getItem(_key: string): Promise<string | null> {
+    getItem(_: string): Promise<string | null> {
       return Promise.resolve(null);
     },
-    setItem(_key: string, value: string): Promise<string> {
+    setItem(_: string, value: string): Promise<string> {
       return Promise.resolve(value);
     },
-    removeItem(_key: string): Promise<void> {
+    removeItem(_: string): Promise<void> {
       return Promise.resolve();
     },
   };
@@ -48,10 +48,12 @@ const persistConfig = {
   storage,
   whitelist: ["global"],
 };
+
 const rootReducer = combineReducers({
   global: globalReducer,
   [api.reducerPath]: api.reducer,
 });
+
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 /* REDUX STORE */
@@ -80,7 +82,7 @@ export default function StoreProvider({
 }: {
   children: React.ReactNode;
 }) {
-    const storeRef = useRef<AppStore | null>(null);
+  const storeRef = useRef<AppStore | null>(null);
   if (!storeRef.current) {
     storeRef.current = makeStore();
     setupListeners(storeRef.current.dispatch);

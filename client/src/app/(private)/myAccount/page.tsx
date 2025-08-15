@@ -4,33 +4,34 @@ import React from "react";
 import { useSession } from "@/app/context/SessionContext";
 import { useGetUserQuery } from "@/state/api";
 import { SquarePen } from "lucide-react";
+import { skipToken } from "@reduxjs/toolkit/query/react";
 
 const capitalize = (str: string) =>
   str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : "";
 
 const MyAccountPage = () => {
   const { user: sessionUser, loading: sessionLoading } = useSession();
-  
-  if (sessionLoading) {
-    return <p className="text-center mt-10">Chargement de la session...</p>;
-  }
-  
-  if (!sessionUser) {
-    return (
-      <p className="text-center mt-10 text-red-500">
-        Vous n'êtes pas connecté.
-      </p>
-    );
-  }
-  
+
+  // Récupération de l'ID utilisateur si disponible
+  const userId = sessionUser?.userId;
+
+  // Hook RTK Query avec skipToken si userId non défini
   const {
     data: apiUser,
     isLoading: apiLoading,
     error: apiError,
-  } = useGetUserQuery(sessionUser.userId);
+  } = useGetUserQuery(userId ?? skipToken);
 
-  if (apiLoading) {
-    return <p className="text-center mt-10">Chargement des données utilisateur...</p>;
+  if (sessionLoading || (!apiUser && apiLoading)) {
+    return <p className="text-center mt-10">Chargement des données...</p>;
+  }
+
+  if (!sessionUser || !sessionUser.userId) {
+    return (
+      <p className="text-center mt-10 text-red-500">
+        Vous n&apos;êtes pas connecté ou identifiant manquant.
+      </p>
+    );
   }
 
   if (apiError) {
@@ -48,8 +49,8 @@ const MyAccountPage = () => {
       </p>
     );
   }
-  
-  const userData = (apiUser as any).user ?? apiUser;
+
+  const userData = apiUser; // <-- juste apiUser directement
 
   return (
     <div className="max-w-3xl mx-auto mt-10 p-6 bg-[var(--bg-high-light)] dark:bg-[var(--bg-high-dark)] rounded-2xl shadow-lg">
@@ -80,7 +81,7 @@ const MyAccountPage = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <p className="text-gray-500 dark:text-gray-400 text-sm mb-1">Email</p>
-          <p className="text-lg font-medium">{userData.userEmail}</p>
+          <p className="text-lg font-medium">email..</p>
         </div>
         <div>
           <p className="text-gray-500 dark:text-gray-400 text-sm mb-1">Compte</p>

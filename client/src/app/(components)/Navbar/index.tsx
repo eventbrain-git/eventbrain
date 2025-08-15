@@ -20,7 +20,7 @@ const Navbar = () => {
     dispatch(setIsSidebarCollapsed(!isSidebarCollapsed));
   };
 
-  const { user, loading } = useSession();
+  const { user } = useSession(); // 'loading' retiré car non utilisé
 
   return (
     <div className="flex justify-between items-center w-full mb-7 rounded-full p-2 shadow-2xl bg-[var(--bg-main-light)] dark:bg-[var(--bg-high-dark)]">
@@ -39,7 +39,6 @@ const Navbar = () => {
             placeholder="Start type to search groups & products"
             className="pl-10 pr-4 py-2 w-50 md:w-60 border-2 border-gray-300 bg-[var(--bg-main-light)] dark:bg-[var(--bg-main-dark)] rounded-lg focus:outline-none focus:border-[var(--bg-highlight-light)] dark:focus:border-[var(--bg-highlight-dark)]"
           />
-
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Bell className="text-[var(--text-main-light)] dark:text-[var(--text-main-dark)]" size={20} />
           </div>
@@ -60,14 +59,12 @@ const Navbar = () => {
 
           <hr className="w-0 h-7 border border-solid border-l border-[var(--text-main-light)] dark:border-[var(--text-main-dark)] mx-3" />
 
-          {/* DROPDOWN REACT */}
-          <HeadlessMenu as="div" className="relative inline-block items-center justify-center w-10 h-10 cursor-pointer rounded-full bg-[var(--bg-highlight-light)] dark:bg-[var(--bg-highlight-dark)] hover:bg-[var(--color-light)] dark:hover:bg-[var(--color-dark)]">
-            <div>
+          {/* DROPDOWN */}
+          <HeadlessMenu as="div" className="relative inline-block w-10 h-10 cursor-pointer rounded-full bg-[var(--bg-highlight-light)] dark:bg-[var(--bg-highlight-dark)] hover:bg-[var(--color-light)] dark:hover:bg-[var(--color-dark)]">
             <HeadlessMenu.Button className="inline-flex items-center justify-center w-full rounded-full px-3 py-2.5 text-sm font-semibold text-[var(--text-main-light)] dark:text-[var(--text-main-dark)]">
-              {user?.userFirstName ? user.userFirstName.charAt(0).toUpperCase() : ""}
-              {user?.userLastName ? user.userLastName.charAt(0).toUpperCase() : ""}
+              {user?.userFirstName?.charAt(0).toUpperCase() || ""}
+              {user?.userLastName?.charAt(0).toUpperCase() || ""}
             </HeadlessMenu.Button>
-            </div>
 
             <Transition
               as={Fragment}
@@ -80,20 +77,20 @@ const Navbar = () => {
             >
               <HeadlessMenu.Items className="absolute right-0 mt-3.5 w-56 origin-top-right divide-y divide-[var(--text-main-light)] dark:divide-[var(--text-main-dark)] rounded-md bg-[var(--bg-high-light)] dark:bg-[var(--bg-high-dark)] shadow-lg focus:outline-none">
                 <div className="py-1">
-                <HeadlessMenu.Item as={React.Fragment}>
-                  {({ active }) => (
-                    <Link
-                      href="/myAccount"
-                      className={`block px-4 py-2 text-sm ${
-                        active
-                          ? "bg-[var(--color-light)] dark:bg-[var(--color-dark)]"
-                          : "text-[var(--text-main-light)] dark:text-[var(--text-main-dark)]"
-                      }`}
-                    >
-                      Mon compte
-                    </Link>
-                  )}
-                </HeadlessMenu.Item>
+                  <HeadlessMenu.Item as={React.Fragment}>
+                    {({ active }) => (
+                      <Link
+                        href="/myAccount"
+                        className={`block px-4 py-2 text-sm ${
+                          active
+                            ? "bg-[var(--color-light)] dark:bg-[var(--color-dark)]"
+                            : "text-[var(--text-main-light)] dark:text-[var(--text-main-dark)]"
+                        }`}
+                      >
+                        Mon compte
+                      </Link>
+                    )}
+                  </HeadlessMenu.Item>
                 </div>
                 <div className="py-1">
                   <HeadlessMenu.Item>

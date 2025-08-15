@@ -1,19 +1,57 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
+// --- TYPES ---
+
 export interface Artist {
   artistId: number;
   artistName: string;
   createdAt: string;
 }
 
+export interface UserProfile {
+  userProfileId: number;
+  userProfileName: string;
+  userProfileDescription: string;
+}
+
+export interface Status {
+  statusId: number;
+  statusName: string;
+  statusDescription: string;
+}
+
+export interface AccountType {
+  typeId: number;
+  typeName: string;
+  typeDescription: string;
+}
+
+export interface Account {
+  accountId: number;
+  accountName: string;
+  statusId: number;
+  typeId: number;
+  status: Status;
+  type: AccountType;
+}
+
 export interface User {
   userId: number;
   userFirstName: string;
-  userLastName: string,
-  userEmail: string;
-  accountTypeName: string;
-  accoutn: string;
+  userLastName: string;
+  userProfileId: number;
+  statusId: number;
+  accountId: number;
+  profile: UserProfile;
+  status: Status;
+  account: Account;
 }
+
+export interface GetUserResponse {
+  user: User;
+}
+
+// --- API ---
 
 export const api = createApi({
   baseQuery: fetchBaseQuery({
@@ -41,9 +79,11 @@ export const api = createApi({
     // --- USERS ---
     getUser: build.query<User, number>({
       query: (id) => `user/${id}`,
+      transformResponse: (response: GetUserResponse) => response.user, // on retourne directement user
       providesTags: (result, error, id) => [{ type: "User", id }],
     }),
   }),
 });
 
+// --- HOOKS RTK QUERY ---
 export const { useGetArtistsQuery, useGetUserQuery } = api;
