@@ -1,0 +1,52 @@
+[
+    {
+        "statusName":"New",
+        "statusDescription":"New client",
+        "entityName":"Client status"
+    },
+    {
+        "statusName":"Active",
+        "statusDescription":"Active client",
+        "entityName":"Client status"
+    },
+    {
+        "statusName":"Inactive",
+        "statusDescription":"Inactive client",
+        "entityName":"Client status"
+    },
+    {
+        "statusName":"Prospect",
+        "statusDescription":"Prospect client",
+        "entityName":"Client status"
+    },
+    {
+        "statusName":"New",
+        "statusDescription":"New account",
+        "entityName":"Account status"
+    },
+    {
+        "statusName":"Active",
+        "statusDescription":"Active account",
+        "entityName":"Account status"
+    },
+    {
+        "statusName":"Inactive",
+        "statusDescription":"Inactive account",
+        "entityName":"Account status"
+    },
+    {
+        "statusName":"Desactivated",
+        "statusDescription":"Waitting for Eventbrain action...",
+        "entityName":"User status"
+    },
+    {
+        "statusName":"Active",
+        "statusDescription":"Active suer",
+        "entityName":"User status"
+    },
+    {
+        "statusName":"Inactive",
+        "statusDescription":"Inactive user",
+        "entityName":"User status"
+    }
+]

@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,8 +8,232 @@ datasource db {
 }
 
 model Artist {
-  artistId    Int      @id @default(autoincrement())
-  artistName  String
+  artistId   Int     @id @default(autoincrement())
+  artistName String
 
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  userId          Int       @id @default(autoincrement())
+  userFirstName   String
+  userLastName    String
+  userAuthId      Int?       @unique
+  userProfileId   Int?       
+  accountId       Int? 
+  statusId        Int?
+  createdAt       DateTime  @default(now())
+  createdBy       Int?
+  updatedAt       DateTime?      
+  updatedBy       Int?
+  deletedAt       DateTime?
+  deletedBy       Int?
+
+  // Relations one-to-one
+  userAuth        UserAuth?      @relation("UserAuth", fields: [userAuthId], references: [userAuthId])
+  
+  // Relation one-to-many
+  status          Status?        @relation("UserStatus", fields: [statusId], references: [statusId])
+  userProfile     UserProfile?   @relation("UserProfile", fields: [userProfileId], references: [userProfileId])
+  account         Account?       @relation("AccountUsers", fields: [accountId], references: [accountId])
+
+  // Relations auto-référencées
+  createdByUser   User?         @relation("UserCreatedBy", fields: [createdBy], references: [userId])
+  updatedByUser   User?         @relation("UserUpdatedBy", fields: [updatedBy], references: [userId])
+  deletedByUser   User?         @relation("UserDeletedBy", fields: [deletedBy], references: [userId])
+
+  createdUsers    User[]        @relation("UserCreatedBy")
+  updatedUsers    User[]        @relation("UserUpdatedBy")
+  deletedUsers    User[]        @relation("UserDeletedBy")
+
+  createdUserProfiles  UserProfile[] @relation("UserProfileCreatedBy")
+  updatedUserProfiles  UserProfile[] @relation("UserProfileUpdatedBy")
+  deletedUserProfiles  UserProfile[] @relation("UserProfileDeletedBy")
+
+  createdUserAuths     UserAuth[]    @relation("UserAuthCreatedBy")
+  updatedUserAuths     UserAuth[]    @relation("UserAuthUpdatedBy")
+  deletedUserAuths     UserAuth[]    @relation("UserAuthDeletedBy")
+
+  createdUserSessions  UserSession[] @relation("SessionCreatedBy")
+  updatedUserSessions  UserSession[] @relation("SessionUpdatedBy")
+  deletedUserSessions  UserSession[] @relation("SessionDeletedBy")
+
+  createdAccounts      Account[]     @relation("AccountCreatedBy")
+  updatedAccounts      Account[]     @relation("AccountUpdatedBy")
+  deletedAccounts      Account[]     @relation("AccountDeletedBy")
+
+  createdClients       Client[]      @relation("ClientCreatedBy")
+  updatedClients       Client[]      @relation("ClientUpdatedBy")
+  deletedClients       Client[]      @relation("ClientDeletedBy")
+
+  createdStatuses      Status[]      @relation("StatusCreatedBy")
+  updatedStatuses      Status[]      @relation("StatusUpdatedBy")
+  deletedStatuses      Status[]      @relation("StatusDeletedBy")
+
+  createdType          Type[]        @relation("TypeCreatedBy")
+  updatedType          Type[]        @relation("TypeUpdatedBy")
+  deletedType          Type[]        @relation("TypeDeletedBy")
+
+  createdEntity        Entity[]      @relation("EntityCreatedBy")
+  updatedEntity        Entity[]      @relation("EntityUpdatedBy")
+  deletedEntity        Entity[]      @relation("EntityDeletedBy")
+}
+
+model UserProfile {
+  userProfileId     Int       @id @default(autoincrement())
+  userProfileName   String
+  userProfileDescription  String?
+  createdAt         DateTime  @default(now())
+  createdBy         Int?
+  updatedAt         DateTime?      
+  updatedBy         Int?
+  deletedAt         DateTime?
+  deletedBy         Int?
+
+  user              User[]     @relation("UserProfile")
+  createdByUser     User?      @relation("UserProfileCreatedBy", fields: [createdBy], references: [userId])
+  updatedByUser     User?     @relation("UserProfileUpdatedBy", fields: [updatedBy], references: [userId])
+  deletedByUser     User?     @relation("UserProfileDeletedBy", fields: [deletedBy], references: [userId])
+}
+
+model UserAuth {
+  userAuthId   Int       @id @default(autoincrement())
+  login        String    @unique
+  password     String
+  createdAt    DateTime  @default(now())
+  createdBy    Int?
+  updatedAt    DateTime?      
+  updatedBy    Int?
+  deletedAt    DateTime?
+  deletedBy    Int?
+
+  user           User?    @relation("UserAuth")
+  createdByUser  User?    @relation("UserAuthCreatedBy", fields: [createdBy], references: [userId])
+  updatedByUser  User?    @relation("UserAuthUpdatedBy", fields: [updatedBy], references: [userId])
+  deletedByUser  User?    @relation("UserAuthDeletedBy", fields: [deletedBy], references: [userId])
+}
+
+model UserSession {
+  userSessionId Int       @id @default(autoincrement())
+  userId        Int
+  statusId      Int
+  createdAt     DateTime  @default(now())
+  createdBy     Int?
+  updatedAt     DateTime?      
+  updatedBy     Int?
+  deletedAt     DateTime?
+  deletedBy     Int?
+
+  status         Status   @relation("SessionStatus", fields: [statusId], references: [statusId])
+  createdByUser  User?    @relation("SessionCreatedBy", fields: [createdBy], references: [userId])
+  updatedByUser  User?    @relation("SessionUpdatedBy", fields: [updatedBy], references: [userId])
+  deletedByUser  User?    @relation("SessionDeletedBy", fields: [deletedBy], references: [userId])
+}
+
+model Account {
+  accountId     Int       @id @default(autoincrement())
+  accountName   String
+  typeId        Int
+  statusId      Int
+  createdAt     DateTime  @default(now())
+  createdBy     Int?
+  updatedAt     DateTime?      
+  updatedBy     Int?
+  deletedAt     DateTime?
+  deletedBy     Int?
+
+  status        Status    @relation("AccountStatus", fields: [statusId], references: [statusId])
+  type          Type      @relation("AccountType", fields: [typeId], references: [typeId])
+
+  users         User[]    @relation("AccountUsers")
+  createdByUser User?     @relation("AccountCreatedBy", fields: [createdBy], references: [userId])
+  updatedByUser User?     @relation("AccountUpdatedBy", fields: [updatedBy], references: [userId])
+  deletedByUser User?     @relation("AccountDeletedBy", fields: [deletedBy], references: [userId])
+}
+
+model Client {
+  clientId      Int       @id @default(autoincrement())
+  clientName          String
+  typeId        Int
+  statusId      Int
+  accountId     Int
+  createdAt     DateTime  @default(now())
+  createdBy     Int?
+  updatedAt     DateTime?      
+  updatedBy     Int?
+  deletedAt     DateTime?
+  deletedBy     Int?
+
+  status         Status   @relation("ClientStatus", fields: [statusId], references: [statusId])
+  type           Type     @relation("ClientType", fields: [typeId], references: [typeId])
+
+  createdByUser  User?    @relation("ClientCreatedBy", fields: [createdBy], references: [userId])
+  updatedByUser  User?    @relation("ClientUpdatedBy", fields: [updatedBy], references: [userId])
+  deletedByUser  User?    @relation("ClientDeletedBy", fields: [deletedBy], references: [userId])
+}
+
+model Type {
+  typeId            Int       @id @default(autoincrement())
+  typeName          String
+  typeDescription   String?
+  entityId          Int
+
+  createdAt         DateTime  @default(now())
+  createdBy         Int?
+  updatedAt         DateTime?      
+  updatedBy         Int?
+  deletedAt         DateTime?
+  deletedBy         Int?
+
+  accounts       Account[] @relation("AccountType")
+  clients        Client[]  @relation("ClientType")
+
+  typeEntity     Entity   @relation("TypeEntity", fields: [entityId], references: [entityId])
+  createdByUser  User?    @relation("TypeCreatedBy", fields: [createdBy], references: [userId])
+  updatedByUser  User?    @relation("TypeUpdatedBy", fields: [updatedBy], references: [userId])
+  deletedByUser  User?    @relation("TypeDeletedBy", fields: [deletedBy], references: [userId])
+}
+
+model Entity {
+  entityId                Int       @id @default(autoincrement())
+  entityName              String
+  entityDescription       String?
+
+  createdAt               DateTime  @default(now())
+  createdBy               Int?
+  updatedAt               DateTime?      
+  updatedBy               Int?
+  deletedAt               DateTime?
+  deletedBy               Int?
+
+  statuses       Status[] @relation("StatusEntity")
+  types          Type[]   @relation("TypeEntity")
+
+  createdByUser  User?    @relation("EntityCreatedBy", fields: [createdBy], references: [userId])
+  updatedByUser  User?    @relation("EntityUpdatedBy", fields: [updatedBy], references: [userId])
+  deletedByUser  User?    @relation("EntityDeletedBy", fields: [deletedBy], references: [userId])
+}
+
+model Status {
+  statusId            Int       @id @default(autoincrement())
+  statusName          String
+  statusDescription   String?
+  entityId            Int
+  createdAt           DateTime  @default(now())
+  createdBy           Int?
+  updatedAt           DateTime?      
+  updatedBy           Int?
+  deletedAt           DateTime?
+  deletedBy           Int?
+
+  users          User[]           @relation("UserStatus")
+  accounts       Account[]        @relation("AccountStatus")
+  clients        Client[]         @relation("ClientStatus")
+  userSession    UserSession[]    @relation("SessionStatus")
+
+  statusEntity   Entity   @relation("StatusEntity", fields: [entityId], references: [entityId])
+  createdByUser  User?    @relation("StatusCreatedBy", fields: [createdBy], references: [userId])
+  updatedByUser  User?    @relation("StatusUpdatedBy", fields: [updatedBy], references: [userId])
+  deletedByUser  User?    @relation("StatusDeletedBy", fields: [deletedBy], references: [userId])
 }

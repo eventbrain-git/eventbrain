@@ -1,0 +1,27 @@
+[
+    {
+        "userLastName":"Root",
+        "login":"root@root.fr",
+        "password":"rootroot"
+    },
+    {
+        "userLastName":"Medina-Gonzalez",
+        "login":"cristie@test.fr",
+        "password":"testtest"
+    },
+    {
+        "userLastName":"Bennaniz",
+        "login":"shady@hellfest.fr",
+        "password":"testtest"
+    },
+    {
+        "userLastName":"Bennani",
+        "login":"shadybennani@gmail.com",
+        "password":"mdpDEzinzin"
+    },
+    {
+        "userLastName":"Band",
+        "login":"amantic.sm@gmail.com",
+        "password":"eauPASsalee"
+    }
+]

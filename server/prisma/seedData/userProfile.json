@@ -1,0 +1,30 @@
+[
+    {
+        "userProfileName":"Admin",
+        "userProfileDescription":"Administrator"
+    },
+    {
+        "userProfileName":"Voluntier",
+        "userProfileDescription":"Voluntier"
+    },
+    {
+        "userProfileName":"Tour manager",
+        "userProfileDescription":"Tour manager of artist"
+    },
+    {
+        "userProfileName":"Artist",
+        "userProfileDescription":"Artist"
+    },
+    {
+        "userProfileName":"Freelance",
+        "userProfileDescription":"Freelance performer"
+    },
+    {
+        "userProfileName":"Staff",
+        "userProfileDescription":"Staff of client"
+    },
+    {
+        "userProfileName":"Production label",
+        "userProfileDescription":"Production label of artist"
+    }
+]

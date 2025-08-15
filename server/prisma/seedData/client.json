@@ -1,0 +1,22 @@
+[
+    {
+        "clientName":"Admin",
+        "typeName":"Admin",
+        "status":"Active"
+    },
+    {
+        "clientName":"Hellfest",
+        "typeName":"Festival",
+        "status":"Active"
+    },
+    {
+        "clientName":"Amantique",
+        "typeName":"Band",
+        "status":"Prospect"
+    },
+    {
+        "clientName":"Shady",
+        "typeName":"Tour manager",
+        "status":"Inactive"
+    }
+]

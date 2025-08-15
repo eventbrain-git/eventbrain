@@ -1,0 +1,22 @@
+[
+    {
+        "accountName":"Admin account",
+        "typeName":"Admin",
+        "statusName":"Active"
+    },
+    {
+        "accountName":"Hellfest account",
+        "typeName":"Standard",
+        "statusName":"Active"
+    },
+    {
+        "accountName":"Shady account",
+        "typeName":"Demo",
+        "statusName":"Inactive"
+    },
+    {
+        "accountName":"Amantique account",
+        "typeName":"Admin",
+        "statusName":"Active"
+    }
+]

@@ -1,0 +1,42 @@
+[
+    {
+        "typeName":"Admin",
+        "typeDescription":"Admin",
+        "entityName":"Client type"
+    },
+    {
+        "typeName":"Band",
+        "typeDescription":"Music band",
+        "entityName":"Client type"
+    },
+    {
+        "typeName":"Festival",
+        "typeDescription":"Music festival",
+        "entityName":"Client type"
+    },
+    {
+        "typeName":"Tour manager",
+        "typeDescription":"Tour manager",
+        "entityName":"Client type"
+    },
+    {
+        "typeName":"Production label",
+        "typeDescription":"Production label",
+        "entityName":"Client type"
+    },
+    {
+        "typeName":"Admin",
+        "typeDescription":"Admin account",
+        "entityName":"Account type"
+    },
+    {
+        "typeName":"Demo",
+        "typeDescription":"Demo account",
+        "entityName":"Account type"
+    },
+    {
+        "typeName":"Standard",
+        "typeDescription":"Standard account",
+        "entityName":"Account type"
+    }
+]

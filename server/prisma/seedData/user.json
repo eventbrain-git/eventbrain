@@ -1,0 +1,37 @@
+[
+    {
+        "userFirstName":"Admin",
+        "userLastName":"Root",
+        "userProfileName":"Admin",
+        "statusName":"Active",
+        "accountName":"Admin account"
+    },
+    {
+        "userFirstName":"Cristie",
+        "userLastName":"Medina-Gonzalez",
+        "userProfileName":"Staff",
+        "statusName":"Active",
+        "accountName":"Hellfest account"
+    },
+    {
+        "userFirstName":"Shady",
+        "userLastName":"Bennaniz",
+        "userProfileName":"Staff",
+        "statusName":"Active",
+        "accountName":"Hellfest account"
+    },
+    {
+        "userFirstName":"Shady",
+        "userLastName":"Bennani",
+        "userProfileName":"Tour manager",
+        "statusName":"Inactive",
+        "accountName":"Shady account"
+    },
+    {
+        "userFirstName":"Amantique",
+        "userLastName":"Band",
+        "userProfileName":"Artist",
+        "statusName":"Active",
+        "accountName":"Amantique account"
+    }
+]

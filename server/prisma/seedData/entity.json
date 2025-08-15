@@ -1,0 +1,26 @@
+[
+    {
+        "entityName":"Client status",
+        "entityDescription":"Status of client"
+    },
+    {
+        "entityName":"Account status",
+        "entityDescription":"Status of account"
+    },
+    {
+        "entityName":"User status",
+        "entityDescription":"Status of user"
+    },
+    {
+        "entityName":"Client type",
+        "entityDescription":"Type of client"
+    },
+    {
+        "entityName":"Account type",
+        "entityDescription":"Type of account"
+    },
+    {
+        "entityName":"User type",
+        "entityDescription":"Type of user"
+    }
+]
