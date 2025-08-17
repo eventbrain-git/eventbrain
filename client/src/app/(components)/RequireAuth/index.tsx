@@ -1,20 +1,17 @@
 "use client";
-
+import { useSession } from "@/app/context/SessionContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { useSession } from "@/app/context/SessionContext";
 
 export default function RequireAuth({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useSession();
+  const { user } = useSession();
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push("/login");
-    }
-  }, [loading, user, router]);
+    if (!user) router.push("/login");
+  }, [user, router]);
 
-  if (loading) return <p>Chargement...</p>;
+  if (!user) return null;
 
-  return user ? <>{children}</> : null;
+  return <>{children}</>;
 }

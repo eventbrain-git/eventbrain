@@ -12,9 +12,9 @@ export default function RootRedirect() {
     if (loading) return;
 
     if (user) {
-      router.replace("/userHome"); // connected
+      router.replace("/userHome");
     } else {
-      router.replace("/home"); // not connected
+      router.replace("/home");
     }
   }, [user, loading, router]);
 

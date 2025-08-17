@@ -10,6 +10,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8
 export default function Login() {
   const router = useRouter();
   const { user, refreshUser, logout } = useSession();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -19,21 +20,30 @@ export default function Login() {
     e.preventDefault();
     setError("");
 
-    const res = await fetch(`${API_BASE_URL}/login`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ login: email, password })
-    });
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ login: email, password }),
+      });
 
-    if (res.ok) {
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Erreur de connexion");
+      }
+
+      // --- Sauvegarder le token JWT ---
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+
       await refreshUser();
       router.replace("/");
-    } else {
-      const err = await res.json();
-      setError(err.message || "Erreur de connexion");
+    } catch (err: any) {
+      setError(err.message);
     }
   };
 
@@ -42,7 +52,10 @@ export default function Login() {
       <>
         <p>Connecté en tant que {user.userEmail}</p>
         <button
-          onClick={logout}
+          onClick={() => {
+            logout();
+            localStorage.removeItem("token");
+          }}
           className="mt-4 px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition"
         >
           Se déconnecter

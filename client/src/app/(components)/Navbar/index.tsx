@@ -20,7 +20,8 @@ const Navbar = () => {
     dispatch(setIsSidebarCollapsed(!isSidebarCollapsed));
   };
 
-  const { user } = useSession(); // 'loading' retiré car non utilisé
+  const { user } = useSession();
+  console.log("user from session:", user);
 
   return (
     <div className="flex justify-between items-center w-full mb-7 rounded-full p-2 shadow-2xl bg-[var(--bg-main-light)] dark:bg-[var(--bg-high-dark)]">

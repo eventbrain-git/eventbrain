@@ -37,6 +37,7 @@ export interface Account {
 
 export interface User {
   userId: number;
+  userEmail: string; // ajouté pour cohérence avec login
   userFirstName: string;
   userLastName: string;
   userProfileId: number;
@@ -52,11 +53,16 @@ export interface GetUserResponse {
 }
 
 // --- API ---
-
 export const api = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
-    credentials: "include",
+    prepareHeaders: (headers) => {
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+      return headers;
+    },
   }),
   reducerPath: "api",
   tagTypes: ["Artist", "User"],
@@ -79,7 +85,7 @@ export const api = createApi({
     // --- USERS ---
     getUser: build.query<User, number>({
       query: (id) => `user/${id}`,
-      transformResponse: (response: GetUserResponse) => response.user, // on retourne directement user
+      transformResponse: (response: GetUserResponse) => response.user,
       providesTags: (result, error, id) => [{ type: "User", id }],
     }),
   }),
