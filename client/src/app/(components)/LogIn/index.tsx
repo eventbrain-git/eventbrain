@@ -16,9 +16,13 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
+  console.log("🟢 Login component rendu, user actuel:", user);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    console.log("🔹 Tentative de connexion avec email:", email);
 
     try {
       const res = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -30,19 +34,23 @@ export default function Login() {
       });
 
       const data = await res.json();
+      console.log("🔹 Réponse du serveur login:", data, "Status:", res.status);
 
       if (!res.ok) {
         throw new Error(data.message || "Erreur de connexion");
       }
 
-      // --- Sauvegarder le token JWT ---
       if (data.token) {
+        console.log("🔑 JWT reçu, sauvegarde dans localStorage");
         localStorage.setItem("token", data.token);
       }
 
       await refreshUser();
+      console.log("🔹 refreshUser exécuté, nouvel user:", user);
+
       router.replace("/");
     } catch (err: unknown) {
+      console.error("❌ Erreur login:", err);
       if (err instanceof Error) {
         setError(err.message);
       } else {
@@ -59,6 +67,7 @@ export default function Login() {
           onClick={() => {
             logout();
             localStorage.removeItem("token");
+            console.log("🚪 Déconnexion, token supprimé");
           }}
           className="mt-4 px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition"
         >
