@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 export interface User {
+  userId: number;
   userEmail: string;
   userFirstName: string;
   userLastName: string;
@@ -40,7 +41,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const data = await res.json();
       // Assure-toi que data.user a bien userEmail, userFirstName, userLastName
       setUser(data.user || null);
-    } catch (err) {
+    } catch {
       setUser(null);
     } finally {
       setLoading(false);

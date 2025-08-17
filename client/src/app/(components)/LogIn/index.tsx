@@ -42,9 +42,13 @@ export default function Login() {
 
       await refreshUser();
       router.replace("/");
-    } catch (err: any) {
-      setError(err.message);
-    }
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Une erreur inattendue est survenue");
+      }
+    }    
   };
 
   if (user) {

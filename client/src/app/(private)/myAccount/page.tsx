@@ -12,10 +12,8 @@ const capitalize = (str: string) =>
 const MyAccountPage = () => {
   const { user: sessionUser, loading: sessionLoading } = useSession();
 
-  // Récupération de l'ID utilisateur si disponible
   const userId = sessionUser?.userId;
 
-  // Hook RTK Query avec skipToken si userId non défini
   const {
     data: apiUser,
     isLoading: apiLoading,
