@@ -25,13 +25,17 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const refreshUser = async () => {
     const token = localStorage.getItem("token");
+    console.log("🔑 Token actuel dans localStorage:", token); // <-- log ajouté
+  
     if (!token) {
       console.log("🔑 Aucun token trouvé, utilisateur déconnecté");
       setUser(null);
       setLoading(false);
       return;
     }
-
+  
+    console.log("📡 Tentative d'appel à /auth/me avec token:", token); // <-- log ajouté
+  
     try {
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000"}/auth/me`,
@@ -39,15 +43,14 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
+  
       if (!res.ok) throw new Error("Impossible de récupérer l'utilisateur");
-
+  
       const data = await res.json();
       console.log("📥 Réponse /auth/me:", data);
-
-      // ✅ Gère les 2 cas possibles : { user: {...} } ou directement {...}
+  
       const userData = data.user ?? data;
-
+  
       setUser(userData || null);
       console.log("✅ Utilisateur mis à jour dans le contexte:", userData);
     } catch (error) {
@@ -57,6 +60,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setLoading(false);
     }
   };
+  
 
   const logout = () => {
     console.log("👋 Déconnexion utilisateur");
