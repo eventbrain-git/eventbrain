@@ -26,22 +26,32 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const refreshUser = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
+      console.log("🔑 Aucun token trouvé, utilisateur déconnecté");
       setUser(null);
       setLoading(false);
       return;
     }
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000"}/auth/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000"}/auth/me`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (!res.ok) throw new Error("Impossible de récupérer l'utilisateur");
 
       const data = await res.json();
-      // Assure-toi que data.user a bien userEmail, userFirstName, userLastName
-      setUser(data.user || null);
-    } catch {
+      console.log("📥 Réponse /auth/me:", data);
+
+      // ✅ Gère les 2 cas possibles : { user: {...} } ou directement {...}
+      const userData = data.user ?? data;
+
+      setUser(userData || null);
+      console.log("✅ Utilisateur mis à jour dans le contexte:", userData);
+    } catch (error) {
+      console.error("❌ Erreur refreshUser:", error);
       setUser(null);
     } finally {
       setLoading(false);
@@ -49,6 +59,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const logout = () => {
+    console.log("👋 Déconnexion utilisateur");
     localStorage.removeItem("token");
     setUser(null);
   };
