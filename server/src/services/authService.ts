@@ -19,10 +19,15 @@ export const login = async (login: string, password: string) => {
   const user = userAuth.user;
 
   const token = jwt.sign(
-    { userId: user.userId, userFirstName: user.userFirstName, userLastName: user.userLastName },
+    {
+      userId: user.userId,
+      userEmail: userAuth.login,
+      userFirstName: user.userFirstName,
+      userLastName: user.userLastName,
+    },
     JWT_SECRET,
     { expiresIn: "1d" }
-  );
+  );  
 
   return { token, user };
 };
