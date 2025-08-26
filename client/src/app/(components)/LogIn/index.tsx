@@ -46,7 +46,7 @@ export default function Login() {
       }
 
       await refreshUser();
-      console.log("🔹 refreshUser exécuté, nouvel user:", user);
+      console.log("🔹 refreshUser exécuté, nouvel user:", localStorage.getItem("token"));
 
       router.replace("/");
     } catch (err: unknown) {
