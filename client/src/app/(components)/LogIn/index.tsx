@@ -20,24 +20,18 @@ export default function Login() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
     try {
       const data = await loginMutation({ login: email, password }).unwrap();
-
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-      }
-
-      // 🔹 Après avoir mis le token, on force le refresh
+    
+      if (data.token) localStorage.setItem("token", data.token);
+    
       const refreshedUser = await refreshUser();
-
-      if (refreshedUser) {
-        router.replace("/userHome");
-      } else {
-        setError("Impossible de récupérer l'utilisateur");
-      }
-    } catch (err: any) {
-      setError(err?.data?.message || err.message || "Erreur inattendue");
+    
+      if (refreshedUser) router.replace("/userHome");
+      else setError("Impossible de récupérer l'utilisateur");
+    } catch (err: unknown) {
+      const error = err as { data?: { message?: string }; message?: string };
+      setError(error.data?.message || error.message || "Erreur inattendue");
     }
   };
 
