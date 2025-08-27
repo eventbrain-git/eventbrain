@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronRight, Eye, EyeOff } from "lucide-react";
 import { useSession } from "@/app/context/SessionContext";
@@ -14,26 +14,36 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const [loggedIn, setLoggedIn] = useState(false); // 🔹 nouvel état pour déclencher useEffect
 
   const [loginMutation, { isLoading }] = useLoginMutation();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
     try {
       const data = await loginMutation({ login: email, password }).unwrap();
-    
-      if (data.token) localStorage.setItem("token", data.token);
-    
-      const refreshedUser = await refreshUser();
-    
-      if (refreshedUser) router.replace("/userHome");
-      else setError("Impossible de récupérer l'utilisateur");
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        setLoggedIn(true); // 🔹 déclenche useEffect pour refreshUser
+      }
     } catch (err: unknown) {
-      const error = err as { data?: { message?: string }; message?: string };
-      setError(error.data?.message || error.message || "Erreur inattendue");
+      const errorObj = err as { data?: { message?: string }; message?: string };
+      setError(errorObj.data?.message || errorObj.message || "Erreur inattendue");
     }
   };
+
+  // 🔹 useEffect pour refreshUser après login
+  useEffect(() => {
+    if (loggedIn) {
+      refreshUser().then((user) => {
+        if (user) router.replace("/userHome");
+        else setError("Impossible de récupérer l'utilisateur");
+      });
+    }
+  }, [loggedIn, refreshUser, router]);
 
   if (user) {
     return (
