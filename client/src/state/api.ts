@@ -37,7 +37,7 @@ export interface Account {
 
 export interface User {
   userId: number;
-  userEmail: string; // ajouté pour cohérence avec login
+  userEmail: string;
   userFirstName: string;
   userLastName: string;
   userProfileId: number;
@@ -48,14 +48,11 @@ export interface User {
   account: Account;
 }
 
-export interface GetUserResponse {
-  user: User;
-}
-
 // --- API ---
 export const api = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
+    credentials: "include", // ✅ envoie/recevoir les cookies
     prepareHeaders: (headers) => {
       const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
       if (token) {
@@ -73,10 +70,7 @@ export const api = createApi({
       providesTags: (result) =>
         result?.artists
           ? [
-              ...result.artists.map(({ artistId }) => ({
-                type: "Artist" as const,
-                id: artistId,
-              })),
+              ...result.artists.map(({ artistId }) => ({ type: "Artist" as const, id: artistId })),
               { type: "Artist", id: "LIST" },
             ]
           : [{ type: "Artist", id: "LIST" }],
@@ -85,11 +79,30 @@ export const api = createApi({
     // --- USERS ---
     getUser: build.query<User, number>({
       query: (id) => `user/${id}`,
-      transformResponse: (response: GetUserResponse) => response.user,
       providesTags: (result, error, id) => [{ type: "User", id }],
+    }),
+
+    // --- LOGIN ---
+    login: build.mutation<{ user: User; message: string }, { email: string; password: string }>({
+      query: (body) => ({
+        url: "auth/login",
+        method: "POST",
+        body,
+      }),
+    }),
+
+    // --- ME (récupérer user connecté) ---
+    getMe: build.query<{ user: User | null }, void>({
+      query: () => "auth/me",
+      providesTags: [{ type: "User", id: "ME" }],
     }),
   }),
 });
 
 // --- HOOKS RTK QUERY ---
-export const { useGetArtistsQuery, useGetUserQuery } = api;
+export const {
+  useGetArtistsQuery,
+  useGetUserQuery,
+  useLoginMutation,
+  useGetMeQuery,
+} = api;

@@ -30,7 +30,8 @@ export default function Login() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ login: email, password }),
+        credentials: "include", // ✅ permet d'envoyer/recevoir les cookies
+        body: JSON.stringify({ login: email, password }),  // ✅ utiliser email et password
       });
 
       const data = await res.json();
@@ -40,13 +41,15 @@ export default function Login() {
         throw new Error(data.message || "Erreur de connexion");
       }
 
+      // Si tu utilises JWT également (optionnel)
       if (data.token) {
         console.log("🔑 JWT reçu, sauvegarde dans localStorage");
         localStorage.setItem("token", data.token);
       }
 
+      // Met à jour l'utilisateur dans ton context
       await refreshUser();
-      console.log("🔹 refreshUser exécuté, nouvel user:", localStorage.getItem("token"));
+      console.log("🔹 refreshUser exécuté, nouvel user:", user);
 
       router.replace("/");
     } catch (err: unknown) {
