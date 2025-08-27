@@ -50,9 +50,9 @@ export interface User {
 
 // --- API ---
 export const api = createApi({
+  reducerPath: "api",
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
-    credentials: "include", // ✅ envoie/recevoir les cookies
     prepareHeaders: (headers) => {
       const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
       if (token) {
@@ -61,7 +61,6 @@ export const api = createApi({
       return headers;
     },
   }),
-  reducerPath: "api",
   tagTypes: ["Artist", "User"],
   endpoints: (build) => ({
     // --- ARTISTS ---
@@ -83,15 +82,25 @@ export const api = createApi({
     }),
 
     // --- LOGIN ---
-    login: build.mutation<{ user: User; message: string }, { email: string; password: string }>({
+    login: build.mutation<{ user: User; token: string }, { login: string; password: string }>({
       query: (body) => ({
         url: "auth/login",
         method: "POST",
         body,
       }),
-    }),
+      async onQueryStarted(arg, { queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          if (data.token) {
+            localStorage.setItem("token", data.token);
+          }
+        } catch (err) {
+          console.error("❌ Erreur lors du stockage du token :", err);
+        }
+      },
+    }),    
 
-    // --- ME (récupérer user connecté) ---
+    // --- ME (récupérer l'utilisateur connecté) ---
     getMe: build.query<{ user: User | null }, void>({
       query: () => "auth/me",
       providesTags: [{ type: "User", id: "ME" }],

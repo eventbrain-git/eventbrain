@@ -4,8 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronRight, Eye, EyeOff } from "lucide-react";
 import { useSession } from "@/app/context/SessionContext";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+import { useLoginMutation } from "@/state/api";
 
 export default function Login() {
   const router = useRouter();
@@ -16,50 +15,30 @@ export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
-  console.log("🟢 Login component rendu, user actuel:", user);
+  const [loginMutation, { isLoading }] = useLoginMutation();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    console.log("🔹 Tentative de connexion avec email:", email);
-
     try {
-      const res = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include", // ✅ permet d'envoyer/recevoir les cookies
-        body: JSON.stringify({ login: email, password }),  // ✅ utiliser email et password
-      });
+      const data = await loginMutation({ login: email, password }).unwrap();
 
-      const data = await res.json();
-      console.log("🔹 Réponse du serveur login:", data, "Status:", res.status);
-
-      if (!res.ok) {
-        throw new Error(data.message || "Erreur de connexion");
-      }
-
-      // Si tu utilises JWT également (optionnel)
       if (data.token) {
-        console.log("🔑 JWT reçu, sauvegarde dans localStorage");
         localStorage.setItem("token", data.token);
       }
 
-      // Met à jour l'utilisateur dans ton context
-      await refreshUser();
-      console.log("🔹 refreshUser exécuté, nouvel user:", user);
+      // 🔹 Après avoir mis le token, on force le refresh
+      const refreshedUser = await refreshUser();
 
-      router.replace("/");
-    } catch (err: unknown) {
-      console.error("❌ Erreur login:", err);
-      if (err instanceof Error) {
-        setError(err.message);
+      if (refreshedUser) {
+        router.replace("/userHome");
       } else {
-        setError("Une erreur inattendue est survenue");
+        setError("Impossible de récupérer l'utilisateur");
       }
-    }    
+    } catch (err: any) {
+      setError(err?.data?.message || err.message || "Erreur inattendue");
+    }
   };
 
   if (user) {
@@ -70,7 +49,6 @@ export default function Login() {
           onClick={() => {
             logout();
             localStorage.removeItem("token");
-            console.log("🚪 Déconnexion, token supprimé");
           }}
           className="mt-4 px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition"
         >
@@ -117,9 +95,10 @@ export default function Login() {
 
       <button
         type="submit"
+        disabled={isLoading}
         className="flex items-center justify-center rounded-xl p-3 bg-[var(--color-light)] dark:bg-[var(--color-dark)] gap-2 cursor-pointer mt-5"
       >
-        Se connecter <ChevronRight />
+        {isLoading ? "Connexion..." : "Se connecter"} <ChevronRight />
       </button>
 
       {error && <p className="text-red-600 text-center mt-3">{error}</p>}

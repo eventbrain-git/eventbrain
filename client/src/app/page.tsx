@@ -9,7 +9,7 @@ export default function RootRedirect() {
   const { user, loading } = useSession();
 
   useEffect(() => {
-    if (loading) return;
+    if (loading) return; // attend que le contexte charge
 
     if (user) {
       router.replace("/userHome");
@@ -18,5 +18,9 @@ export default function RootRedirect() {
     }
   }, [user, loading, router]);
 
-  return <p>Chargement en cours...</p>;
+  return (
+    <main className="flex items-center justify-center min-h-screen">
+      <p>Chargement en cours...</p>
+    </main>
+  );
 }

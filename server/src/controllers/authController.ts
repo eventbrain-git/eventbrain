@@ -39,6 +39,9 @@ export const me = async (req: Request, res: Response) => {
 };
 
 
-export const logout = (_req: Request, res: Response) => {
-  res.json({ message: "Déconnecté côté client" });
+export const logout = (req: Request, res: Response) => {
+  req.session?.destroy(() => {
+    res.clearCookie("connect.sid");
+    res.json({ message: "Déconnecté" });
+  });
 };

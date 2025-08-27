@@ -1,5 +1,6 @@
 "use client";
 
+import { useGetMeQuery } from "@/state/api";
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 export interface User {
@@ -12,8 +13,7 @@ export interface User {
 interface SessionContextType {
   user: User | null;
   loading: boolean;
-  setUser: (user: User | null) => void;
-  refreshUser: () => Promise<void>;
+  refreshUser: () => Promise<User | null>;
   logout: () => void;
 }
 
@@ -23,44 +23,35 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const refreshUser = async () => {
-    const token = localStorage.getItem("token");
-    console.log("🔑 Token actuel dans localStorage:", token); // <-- log ajouté
-  
-    if (!token) {
-      console.log("🔑 Aucun token trouvé, utilisateur déconnecté");
-      setUser(null);
-      setLoading(false);
-      return;
+  // Récupère le token à chaque mount
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+  // Initialise la query getMe uniquement si token présent
+  const { data, isFetching, refetch, isUninitialized } = useGetMeQuery(undefined, { skip: !token });
+
+  useEffect(() => {
+    if (!isUninitialized) {
+      setUser(data?.user ?? null);
+      setLoading(isFetching);
     }
-  
-    console.log("📡 Tentative d'appel à /auth/me avec token:", token); // <-- log ajouté
-  
+  }, [data, isFetching, isUninitialized]);
+
+  // RefreshUser force le refetch même si la query était initialement skip
+  const refreshUser = async (): Promise<User | null> => {
+    setLoading(true);
     try {
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000"}/auth/me`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-  
-      if (!res.ok) throw new Error("Impossible de récupérer l'utilisateur");
-  
-      const data = await res.json();
-      console.log("📥 Réponse /auth/me:", data);
-  
-      const userData = data.user ?? data;
-  
-      setUser(userData || null);
-      console.log("✅ Utilisateur mis à jour dans le contexte:", userData);
-    } catch (error) {
-      console.error("❌ Erreur refreshUser:", error);
+      const result = await refetch(); // refetch forcé
+      const newUser = result.data?.user ?? null;
+      setUser(newUser);
+      return newUser;
+    } catch (err) {
+      console.error("❌ Erreur refreshUser:", err);
       setUser(null);
+      return null;
     } finally {
       setLoading(false);
     }
   };
-  
 
   const logout = () => {
     console.log("👋 Déconnexion utilisateur");
@@ -68,12 +59,8 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setUser(null);
   };
 
-  useEffect(() => {
-    refreshUser();
-  }, []);
-
   return (
-    <SessionContext.Provider value={{ user, loading, setUser, refreshUser, logout }}>
+    <SessionContext.Provider value={{ user, loading, refreshUser, logout }}>
       {children}
     </SessionContext.Provider>
   );

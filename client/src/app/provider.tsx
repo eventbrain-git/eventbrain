@@ -2,14 +2,14 @@
 
 import { ThemeProvider } from "@/app/context/ThemeContext";
 import { SessionProvider } from "@/app/context/SessionContext";
-import StoreProvider from "./redux";
+import StoreProvider from "./redux"; // ton Provider Redux
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <SessionProvider>
-      <StoreProvider>
+    <StoreProvider>
+      <SessionProvider>
         <ThemeProvider>{children}</ThemeProvider>
-      </StoreProvider>
-    </SessionProvider>
+      </SessionProvider>
+    </StoreProvider>
   );
 }
