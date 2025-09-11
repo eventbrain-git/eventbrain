@@ -9,8 +9,10 @@ export default function RootRedirect() {
   const { user, loading } = useSession();
 
   useEffect(() => {
-    if (loading) return; // attend que le contexte charge
-
+    console.log("loading:", loading, "user:", user);
+  
+    if (loading) return;
+  
     if (user) {
       router.replace("/userHome");
     } else {

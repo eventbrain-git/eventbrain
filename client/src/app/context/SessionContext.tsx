@@ -23,24 +23,33 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Récupère le token à chaque mount
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-  // Initialise la query getMe uniquement si token présent
-  const { data, isFetching, refetch, isUninitialized } = useGetMeQuery(undefined, { skip: !token });
+  // Initialise la query uniquement si token présent
+  const { data, isFetching, refetch, isUninitialized, isError } = useGetMeQuery(undefined, {
+    skip: !token,
+  });
 
   useEffect(() => {
-    if (!isUninitialized) {
-      setUser(data?.user ?? null);
-      setLoading(isFetching);
+    if (!token) {
+      // pas de token -> pas de user
+      setUser(null);
+      setLoading(false);
+      return;
     }
-  }, [data, isFetching, isUninitialized]);
 
-  // RefreshUser force le refetch même si la query était initialement skip
+    if (!isUninitialized && !isFetching) {
+      setUser(data?.user ?? null);
+      setLoading(false); // ⚠️ toujours relâcher loading une fois la requête finie
+    } else if (isFetching) {
+      setLoading(true);
+    }
+  }, [token, data, isFetching, isUninitialized]);
+
   const refreshUser = async (): Promise<User | null> => {
     setLoading(true);
     try {
-      const result = await refetch(); // refetch forcé
+      const result = await refetch();
       const newUser = result.data?.user ?? null;
       setUser(newUser);
       return newUser;
@@ -57,6 +66,7 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
     console.log("👋 Déconnexion utilisateur");
     localStorage.removeItem("token");
     setUser(null);
+    setLoading(false); // important
   };
 
   return (
