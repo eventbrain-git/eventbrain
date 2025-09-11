@@ -53,6 +53,7 @@ export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
+    credentials: "include",
     prepareHeaders: (headers) => {
       const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
       if (token) {
@@ -60,7 +61,7 @@ export const api = createApi({
       }
       return headers;
     },
-  }),
+  }),  
   tagTypes: ["Artist", "User"],
   endpoints: (build) => ({
     // --- ARTISTS ---
