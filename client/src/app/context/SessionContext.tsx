@@ -22,29 +22,17 @@ const SessionContext = createContext<SessionContextType | undefined>(undefined);
 export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-
-  // Initialise la query uniquement si token présent
-  const { data, isFetching, refetch, isUninitialized, isError } = useGetMeQuery(undefined, {
-    skip: !token,
-  });
+  
+  const { data, isFetching, refetch, isUninitialized } = useGetMeQuery(undefined, { skip: false });
 
   useEffect(() => {
-    if (!token) {
-      // pas de token -> pas de user
-      setUser(null);
-      setLoading(false);
-      return;
-    }
-
     if (!isUninitialized && !isFetching) {
       setUser(data?.user ?? null);
-      setLoading(false); // ⚠️ toujours relâcher loading une fois la requête finie
+      setLoading(false);
     } else if (isFetching) {
       setLoading(true);
     }
-  }, [token, data, isFetching, isUninitialized]);
+  }, [data, isFetching, isUninitialized]);
 
   const refreshUser = async (): Promise<User | null> => {
     setLoading(true);
@@ -63,10 +51,12 @@ export const SessionProvider: React.FC<{ children: React.ReactNode }> = ({ child
   };
 
   const logout = () => {
-    console.log("👋 Déconnexion utilisateur");
-    localStorage.removeItem("token");
     setUser(null);
-    setLoading(false); // important
+    setLoading(false);
+    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/logout`, {
+      method: "POST",
+      credentials: "include",
+    });
   };
 
   return (

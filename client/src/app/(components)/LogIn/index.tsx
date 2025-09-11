@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronRight, Eye, EyeOff } from "lucide-react";
 import { useSession } from "@/app/context/SessionContext";
@@ -14,7 +14,6 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const [loggedIn, setLoggedIn] = useState(false); // 🔹 nouvel état pour déclencher useEffect
 
   const [loginMutation, { isLoading }] = useLoginMutation();
 
@@ -23,11 +22,15 @@ export default function Login() {
     setError("");
 
     try {
-      const data = await loginMutation({ login: email, password }).unwrap();
+      // 🔹 Appel du back pour créer la session (cookie connect.sid)
+      await loginMutation({ login: email, password }).unwrap();
 
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-        setLoggedIn(true); // 🔹 déclenche useEffect pour refreshUser
+      // 🔹 On refresh l'utilisateur via getMe
+      const currentUser = await refreshUser();
+      if (currentUser) {
+        router.replace("/userHome");
+      } else {
+        setError("Impossible de récupérer l'utilisateur après connexion");
       }
     } catch (err: unknown) {
       const errorObj = err as { data?: { message?: string }; message?: string };
@@ -35,37 +38,24 @@ export default function Login() {
     }
   };
 
-  // 🔹 useEffect pour refreshUser après login
-  useEffect(() => {
-    if (loggedIn) {
-      refreshUser().then((user) => {
-        if (user) router.replace("/userHome");
-        else setError("Impossible de récupérer l'utilisateur");
-      });
-    }
-  }, [loggedIn, refreshUser, router]);
-
   if (user) {
     return (
-      <>
+      <div className="max-w-md mx-auto mt-10">
         <p>Connecté en tant que {user.userEmail}</p>
         <button
-          onClick={() => {
-            logout();
-            localStorage.removeItem("token");
-          }}
+          onClick={() => logout()}
           className="mt-4 px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition"
         >
           Se déconnecter
         </button>
-      </>
+      </div>
     );
   }
 
   return (
     <form
       onSubmit={handleLogin}
-      className="flex flex-col gap-3 max-w-md mx-auto text-[var(--text-main-light)] dark:text-[var(--text-main-dark)]"
+      className="flex flex-col gap-3 max-w-md mx-auto text-[var(--text-main-light)] dark:text-[var(--text-main-dark)] mt-10"
     >
       <h1 className="text-center mb-5 text-2xl font-semibold">Se connecter</h1>
 
