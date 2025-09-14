@@ -21,15 +21,19 @@ export default function Login() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
+  
     try {
-      // 🔹 Login pour obtenir JWT
       const loginResult = await loginMutation({ login: email, password }).unwrap();
-      localStorage.setItem("jwt", loginResult.token);
-
-      // 🔹 Dispatch getMe et unwrap
-      const meResult = await dispatch(api.endpoints.getMe.initiate()).unwrap();
-
+      const token = loginResult.token;
+      localStorage.setItem("jwt", token);
+  
+      // 🔹 Appel getMe avec fetchBaseQuery direct pour garantir l'en-tête
+      const meResult = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }).then((res) => res.json());
+  
       if (meResult.user) {
         router.replace("/userHome");
       } else {
@@ -40,7 +44,7 @@ export default function Login() {
       const errorObj = err as { data?: { message?: string }; message?: string };
       setError(errorObj?.data?.message || errorObj?.message || "Erreur inattendue");
     }
-  };
+  };  
 
   return (
     <form
