@@ -1,7 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import session from "express-session";
 
 import artistRoutes from "./routes/artistRoutes";
 import userRoutes from "./routes/userRoutes";
@@ -23,22 +22,7 @@ const FRONTEND_URL =
 app.use(
   cors({
     origin: FRONTEND_URL,
-    credentials: true, // ✅ nécessaire pour envoyer/recevoir les cookies
-  })
-);
-
-// --- Session ---
-app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "monsecret",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    },    
+    credentials: true, // pas nécessaire pour JWT mais peut rester
   })
 );
 

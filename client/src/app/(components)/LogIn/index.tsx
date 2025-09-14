@@ -3,12 +3,13 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronRight, Eye, EyeOff } from "lucide-react";
-import { useSession } from "@/app/context/SessionContext";
-import { useLoginMutation } from "@/state/api";
+import { useLoginMutation, api, User } from "@/state/api";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/state/store";
 
 export default function Login() {
   const router = useRouter();
-  const { user, refreshUser, logout } = useSession();
+  const dispatch = useDispatch<AppDispatch>();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,35 +23,24 @@ export default function Login() {
     setError("");
 
     try {
-      // 🔹 Appel du back pour créer la session (cookie connect.sid)
-      await loginMutation({ login: email, password }).unwrap();
+      // 🔹 Login pour obtenir JWT
+      const loginResult = await loginMutation({ login: email, password }).unwrap();
+      localStorage.setItem("jwt", loginResult.token);
 
-      // 🔹 Récupération de l'utilisateur via getMe
-      const currentUser = await refreshUser();
-      if (currentUser) {
+      // 🔹 Dispatch getMe et unwrap
+      const meResult = await dispatch(api.endpoints.getMe.initiate()).unwrap();
+
+      if (meResult.user) {
         router.replace("/userHome");
       } else {
         setError("Impossible de récupérer l'utilisateur après connexion");
       }
     } catch (err: unknown) {
+      console.error(err);
       const errorObj = err as { data?: { message?: string }; message?: string };
-      setError(errorObj.data?.message || errorObj.message || "Erreur inattendue");
+      setError(errorObj?.data?.message || errorObj?.message || "Erreur inattendue");
     }
   };
-
-  if (user) {
-    return (
-      <div className="max-w-md mx-auto mt-10">
-        <p>Connecté en tant que {user.userEmail}</p>
-        <button
-          onClick={() => logout()}
-          className="mt-4 px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600 transition"
-        >
-          Se déconnecter
-        </button>
-      </div>
-    );
-  }
 
   return (
     <form

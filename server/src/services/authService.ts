@@ -14,5 +14,5 @@ export const login = async (login: string, password: string) => {
   const valid = await bcrypt.compare(password, userAuth.password);
   if (!valid) throw new Error("Mot de passe incorrect");
 
-  return userAuth.user; // juste l'utilisateur
+  return userAuth.user;
 };

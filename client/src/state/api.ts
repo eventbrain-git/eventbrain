@@ -1,59 +1,23 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 // --- TYPES ---
-
-export interface Artist {
-  artistId: number;
-  artistName: string;
-  createdAt: string;
-}
-
-export interface UserProfile {
-  userProfileId: number;
-  userProfileName: string;
-  userProfileDescription: string;
-}
-
-export interface Status {
-  statusId: number;
-  statusName: string;
-  statusDescription: string;
-}
-
-export interface AccountType {
-  typeId: number;
-  typeName: string;
-  typeDescription: string;
-}
-
-export interface Account {
-  accountId: number;
-  accountName: string;
-  statusId: number;
-  typeId: number;
-  status: Status;
-  type: AccountType;
-}
-
-export interface User {
-  userId: number;
-  userEmail: string;
-  userFirstName: string;
-  userLastName: string;
-  userProfileId: number;
-  statusId: number;
-  accountId: number;
-  profile: UserProfile;
-  status: Status;
-  account: Account;
-}
+export interface Artist { artistId: number; artistName: string; createdAt: string; }
+export interface UserProfile { userProfileId: number; userProfileName: string; userProfileDescription: string; }
+export interface Status { statusId: number; statusName: string; statusDescription: string; }
+export interface AccountType { typeId: number; typeName: string; typeDescription: string; }
+export interface Account { accountId: number; accountName: string; statusId: number; typeId: number; status: Status; type: AccountType; }
+export interface User { userId: number; userEmail: string; userFirstName: string; userLastName: string; userProfileId: number; statusId: number; accountId: number; profile: UserProfile; status: Status; account: Account; }
 
 // --- API ---
 export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
-    credentials: "include", // ✅ nécessaire pour envoyer le cookie connect.sid
+    prepareHeaders: (headers) => {
+      const token = localStorage.getItem("jwt");
+      if (token) headers.set("Authorization", `Bearer ${token}`);
+      return headers;
+    },
   }),
   tagTypes: ["Artist", "User"],
   endpoints: (build) => ({
@@ -76,7 +40,7 @@ export const api = createApi({
     }),
 
     // --- LOGIN ---
-    login: build.mutation<{ user: User }, { login: string; password: string }>({
+    login: build.mutation<{ token: string; user: User }, { login: string; password: string }>({
       query: (body) => ({
         url: "auth/login",
         method: "POST",
@@ -84,7 +48,7 @@ export const api = createApi({
       }),
     }),
 
-    // --- ME (récupérer l'utilisateur connecté) ---
+    // --- ME ---
     getMe: build.query<{ user: User | null }, void>({
       query: () => "auth/me",
       providesTags: [{ type: "User", id: "ME" }],
