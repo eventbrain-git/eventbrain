@@ -14,11 +14,15 @@ export const api = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
     prepareHeaders: (headers) => {
-      const token = localStorage.getItem("jwt");
-      if (token) headers.set("Authorization", `Bearer ${token}`);
+      if (typeof window !== "undefined") {
+        const token = localStorage.getItem("jwt");
+        if (token && token !== "undefined" && token !== "null") {
+          headers.set("Authorization", `Bearer ${token}`);
+        }
+      }
       return headers;
     },
-  }),
+  }),  
   tagTypes: ["Artist", "User"],
   endpoints: (build) => ({
     // --- ARTISTS ---
