@@ -25,7 +25,7 @@ export default function Login() {
       // 🔹 Appel du back pour créer la session (cookie connect.sid)
       await loginMutation({ login: email, password }).unwrap();
 
-      // 🔹 On refresh l'utilisateur via getMe
+      // 🔹 Récupération de l'utilisateur via getMe
       const currentUser = await refreshUser();
       if (currentUser) {
         router.replace("/userHome");

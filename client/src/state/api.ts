@@ -53,15 +53,8 @@ export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL,
-    credentials: "include",
-    prepareHeaders: (headers) => {
-      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),  
+    credentials: "include", // ✅ nécessaire pour envoyer le cookie connect.sid
+  }),
   tagTypes: ["Artist", "User"],
   endpoints: (build) => ({
     // --- ARTISTS ---
@@ -83,28 +76,26 @@ export const api = createApi({
     }),
 
     // --- LOGIN ---
-    login: build.mutation<{ user: User; token: string }, { login: string; password: string }>({
+    login: build.mutation<{ user: User }, { login: string; password: string }>({
       query: (body) => ({
         url: "auth/login",
         method: "POST",
         body,
       }),
-      async onQueryStarted(arg, { queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          if (data.token) {
-            localStorage.setItem("token", data.token);
-          }
-        } catch (err) {
-          console.error("❌ Erreur lors du stockage du token :", err);
-        }
-      },
-    }),    
+    }),
 
     // --- ME (récupérer l'utilisateur connecté) ---
     getMe: build.query<{ user: User | null }, void>({
       query: () => "auth/me",
       providesTags: [{ type: "User", id: "ME" }],
+    }),
+
+    // --- LOGOUT ---
+    logout: build.mutation<{ message: string }, void>({
+      query: () => ({
+        url: "auth/logout",
+        method: "POST",
+      }),
     }),
   }),
 });
@@ -115,4 +106,5 @@ export const {
   useGetUserQuery,
   useLoginMutation,
   useGetMeQuery,
+  useLogoutMutation,
 } = api;
