@@ -38,7 +38,7 @@ export const api = createApi({
     }),
 
     // --- USERS ---
-    getUser: build.query<User, number>({
+    getUser: build.query<{ user: User }, number>({
       query: (id) => `user/${id}`,
       providesTags: (result, error, id) => [{ type: "User", id }],
     }),
